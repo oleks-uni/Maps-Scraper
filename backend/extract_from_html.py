@@ -3,15 +3,13 @@ from bs4 import BeautifulSoup
 
 TIME_LIKE = re.compile(r"\b\d{1,2}:\d{2}\b")
 STATUS_WORDS = (
-    "Зачинено", "Відчиняється", "Відчинено", "Закрито",
-    "Отворено", "Затваря",
     "Closed", "Open", "Opens", "Closes"
 )
 
 def extract_address(article):
     blocks = article.select("div.W4Efsd")
     for block in blocks:
-        # пропускаємо саме рейтинг-блок (а не accessibility icons role=img)
+        
         if block.select_one("span.ZkP5Je[aria-label]") or block.select_one("span.MW4etd"):
             continue
 
@@ -29,7 +27,8 @@ def extract_address(article):
 
 def parse_places(html: str):
     soup = BeautifulSoup(html, "lxml")
-    articles = soup.select('div[role="article"], div.Nv2PK')  # якщо inner_html - інколи Nv2PK без role
+    articles = soup.select('div[role="article"], div.Nv2PK') 
+    
 
     results = []
     for a in articles:
@@ -41,7 +40,6 @@ def parse_places(html: str):
         elif a.get("aria-label"):
             name = a["aria-label"].strip()
 
-        # rating raw (може бути різними мовами)
         rating_raw = None
         rating_tag = a.select_one('span.ZkP5Je[aria-label]')
         if rating_tag:
